@@ -7,19 +7,15 @@ interface QueryParams {
   airportId?: number;
 }
 
-export const executeQuery = async (queryType: string, params: QueryParams = {}): Promise<ComplexQueryResult[]> => {
+const executeQuery = async (queryType: string, params: QueryParams = {}): Promise<ComplexQueryResult[]> => {
   try {
     const response = await fetch('/api/sql-queries', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ queryType, ...params }),
     });
     
-    if (!response.ok) {
-      throw new Error('Failed to execute query');
-    }
+    if (!response.ok) throw new Error('Failed to execute query');
     
     const data = await response.json();
     return data.data;
@@ -30,18 +26,14 @@ export const executeQuery = async (queryType: string, params: QueryParams = {}):
 };
 
 export const complexQueries = {
-  getFlightsWithAircraftInfo: (params: { startDate?: string; endDate?: string } = {}) => 
+  flights: (params?: { startDate?: string; endDate?: string }) => 
     executeQuery('flights', params),
-
-  getCrewWithFlightInfo: (params: { airlineId?: number } = {}) => 
+  crew: (params?: { airlineId?: number }) => 
     executeQuery('crew', params),
-
-  getAirlineAircraftStats: () => 
+  airlines: () => 
     executeQuery('airlines'),
-
-  getAirportLoadDetails: (params: { airportId?: number } = {}) => 
+  airports: (params?: { airportId?: number }) => 
     executeQuery('airports', params),
-
-  getTicketDetailsWithPassengers: () => 
+  tickets: () => 
     executeQuery('tickets'),
 };

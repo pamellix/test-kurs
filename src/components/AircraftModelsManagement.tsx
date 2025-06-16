@@ -31,6 +31,13 @@ export const AircraftModelsManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedClass || !formData.name || !formData.manufacturer || 
+        !formData.crewSize || !formData.passengerCapacity || 
+        !formData.operationalCost || !formData.fuelConsumption) {
+      alert('Пожалуйста, заполните все обязательные поля: класс, название, производитель, размер экипажа, вместимость, стоимость эксплуатации и расход топлива');
+      return;
+    }
+
     try {
       const modelData: AircraftModelCreateRequest = {
         name: formData.name,
@@ -39,13 +46,14 @@ export const AircraftModelsManagement = () => {
         passengerCapacity: formData.passengerCapacity,
         operationalCost: formData.operationalCost,
         fuelConsumption: formData.fuelConsumption,
-        classId: selectedClass ? Number(selectedClass) : undefined,
+        classId: Number(selectedClass),
       };
 
       await createAircraftModelMutation.mutateAsync(modelData);
       resetForm();
     } catch (error) {
       console.error('Error creating aircraft model:', error);
+      alert('Ошибка при создании модели самолета. Проверьте, что все поля заполнены корректно и выбранный класс существует.');
     }
   };
 
@@ -94,7 +102,6 @@ export const AircraftModelsManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Модели самолетов</h2>
@@ -109,7 +116,6 @@ export const AircraftModelsManagement = () => {
         </button>
       </div>
 
-      {/* Models Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.isArray(aircraftModels) && aircraftModels.map((model) => (
           <div key={model.modelId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
@@ -148,7 +154,6 @@ export const AircraftModelsManagement = () => {
           </div>
         ))}
         
-        {/* Empty state */}
         {(!Array.isArray(aircraftModels) || aircraftModels.length === 0) && (
           <div className="col-span-full text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">🛩️</div>
@@ -164,7 +169,6 @@ export const AircraftModelsManagement = () => {
         )}
       </div>
 
-      {/* Add Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-10 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto">

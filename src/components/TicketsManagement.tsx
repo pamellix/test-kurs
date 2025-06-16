@@ -27,8 +27,10 @@ export const TicketsManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFlight) {
-      alert('Пожалуйста, выберите рейс');
+    console.log(selectedFlight, formData.passengerName, formData.passengerPassport, formData.seatNumber, formData.price);
+    if (!selectedFlight || !formData.passengerName || !formData.passengerPassport || 
+        !formData.seatNumber || !formData.price) {
+      alert('Пожалуйста, заполните все обязательные поля: рейс, имя пассажира, паспорт, номер места и цена');
       return;
     }
     
@@ -45,6 +47,7 @@ export const TicketsManagement = () => {
       resetForm();
     } catch (error) {
       console.error('Error creating ticket:', error);
+      alert('Ошибка при создании билета. Проверьте, что все поля заполнены корректно и выбранный рейс существует.');
     }
   };
 
@@ -99,7 +102,6 @@ export const TicketsManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Билеты</h2>
@@ -114,7 +116,6 @@ export const TicketsManagement = () => {
         </button>
       </div>
 
-      {/* Tickets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.isArray(tickets) && tickets.map((ticket) => (
           <div key={ticket.ticketId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
@@ -158,7 +159,6 @@ export const TicketsManagement = () => {
           </div>
         ))}
         
-        {/* Empty state */}
         {(!Array.isArray(tickets) || tickets.length === 0) && (
           <div className="col-span-full text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">🎫</div>
@@ -174,7 +174,6 @@ export const TicketsManagement = () => {
         )}
       </div>
 
-      {/* Add Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">

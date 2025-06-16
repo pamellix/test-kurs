@@ -26,8 +26,8 @@ export const CrewAssignmentsManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedCrewMember || !selectedFlight) {
-      alert('Пожалуйста, выберите члена экипажа и рейс');
+    if (!selectedCrewMember || !selectedFlight || !formData.role) {
+      alert('Пожалуйста, заполните все обязательные поля: член экипажа, рейс и роль');
       return;
     }
     
@@ -50,6 +50,7 @@ export const CrewAssignmentsManagement = () => {
       resetForm();
     } catch (error) {
       console.error('Error saving crew assignment:', error);
+      alert('Ошибка при сохранении назначения. Проверьте, что все поля заполнены корректно и выбранные член экипажа и рейс существуют.');
     }
   };
 
@@ -119,7 +120,6 @@ export const CrewAssignmentsManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Назначения экипажа</h2>
@@ -134,7 +134,6 @@ export const CrewAssignmentsManagement = () => {
         </button>
       </div>
 
-      {/* Assignments Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.isArray(crewAssignments) && crewAssignments.map((assignment) => (
           <div key={assignment.assignmentId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
@@ -187,7 +186,6 @@ export const CrewAssignmentsManagement = () => {
           </div>
         ))}
         
-        {/* Empty state */}
         {(!Array.isArray(crewAssignments) || crewAssignments.length === 0) && (
           <div className="col-span-full text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">👨‍✈️</div>
@@ -203,7 +201,6 @@ export const CrewAssignmentsManagement = () => {
         )}
       </div>
 
-      {/* Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">

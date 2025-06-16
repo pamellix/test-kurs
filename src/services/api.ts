@@ -40,14 +40,41 @@ export const airlinesAPI = {
 export const aircraftAPI = {
   getAll: () => api.get<Aircraft[]>('/aircrafts'),
   getById: (id: number) => api.get<Aircraft>(`/aircrafts/${id}`),
-  create: (aircraft: AircraftCreateRequest) => api.post<Aircraft>('/aircrafts', aircraft),
-  update: (id: number, aircraft: AircraftCreateRequest) => api.patch<Aircraft>(`/aircrafts/${id}`, aircraft),
+  create: (aircraft: AircraftCreateRequest) => {
+    const payload = {
+      registrationNumber: aircraft.registrationNumber,
+      manufactureDate: aircraft.manufactureDate,
+      airline: aircraft.airlineId ? { airlineId: aircraft.airlineId } : null,
+      model: aircraft.modelId ? { modelId: aircraft.modelId } : null,
+    };
+    return api.post<Aircraft>('/aircrafts', payload);
+  },
+  update: (id: number, aircraft: AircraftCreateRequest) => {
+    const payload = {
+      registrationNumber: aircraft.registrationNumber,
+      manufactureDate: aircraft.manufactureDate,
+      airline: aircraft.airlineId ? { airlineId: aircraft.airlineId } : null,
+      model: aircraft.modelId ? { modelId: aircraft.modelId } : null,
+    };
+    return api.patch<Aircraft>(`/aircrafts/${id}`, payload);
+  },
   delete: (id: number) => api.delete(`/aircrafts/${id}`),
 };
 
 export const aircraftModelsAPI = {
   getAll: () => api.get<AircraftModel[]>('/aircraft-models'),
-  create: (model: AircraftModelCreateRequest) => api.post<AircraftModel>('/aircraft-models', model),
+  create: (model: AircraftModelCreateRequest) => {
+    const payload = {
+      name: model.name,
+      manufacturer: model.manufacturer,
+      crewSize: model.crewSize,
+      passengerCapacity: model.passengerCapacity,
+      operationalCost: model.operationalCost,
+      fuelConsumption: model.fuelConsumption,
+      aircraftClass: model.classId ? { classId: model.classId } : null,
+    };
+    return api.post<AircraftModel>('/aircraft-models', payload);
+  },
 };
 
 export const aircraftClassesAPI = {
@@ -72,8 +99,30 @@ export const airportsAPI = {
 export const flightsAPI = {
   getAll: () => api.get<Flight[]>('/flights'),
   getById: (id: number) => api.get<Flight>(`/flights/${id}`),
-  create: (flight: FlightCreateRequest) => api.post<Flight>('/flights', flight),
-  update: (id: number, flight: FlightCreateRequest) => api.patch<Flight>(`/flights/${id}`, flight),
+  create: (flight: FlightCreateRequest) => {
+    const payload = {
+      departureTime: flight.departureTime,
+      arrivalTime: flight.arrivalTime,
+      flightHours: flight.flightHours,
+      ticketPrice: flight.ticketPrice,
+      aircraft: flight.aircraftId ? { aircraftId: flight.aircraftId } : null,
+      departureAirport: flight.departureAirportId ? { airportId: flight.departureAirportId } : null,
+      arrivalAirport: flight.arrivalAirportId ? { airportId: flight.arrivalAirportId } : null,
+    };
+    return api.post<Flight>('/flights', payload);
+  },
+  update: (id: number, flight: FlightCreateRequest) => {
+    const payload = {
+      departureTime: flight.departureTime,
+      arrivalTime: flight.arrivalTime,
+      flightHours: flight.flightHours,
+      ticketPrice: flight.ticketPrice,
+      aircraft: flight.aircraftId ? { aircraftId: flight.aircraftId } : null,
+      departureAirport: flight.departureAirportId ? { airportId: flight.departureAirportId } : null,
+      arrivalAirport: flight.arrivalAirportId ? { airportId: flight.arrivalAirportId } : null,
+    };
+    return api.patch<Flight>(`/flights/${id}`, payload);
+  },
   delete: (id: number) => api.delete(`/flights/${id}`),
   search: (departureAirport?: string, arrivalAirport?: string, departureDate?: string) => {
     const params = new URLSearchParams();
@@ -90,8 +139,28 @@ export const flightsAPI = {
 export const crewMembersAPI = {
   getAll: () => api.get<CrewMember[]>('/crew-members'),
   getById: (id: number) => api.get<CrewMember>(`/crew-members/${id}`),
-  create: (crewMember: CrewMemberCreateRequest) => api.post<CrewMember>('/crew-members', crewMember),
-  update: (id: number, crewMember: CrewMemberCreateRequest) => api.patch<CrewMember>(`/crew-members/${id}`, crewMember),
+  create: (crewMember: CrewMemberCreateRequest) => {
+    const payload = {
+      firstName: crewMember.firstName,
+      lastName: crewMember.lastName,
+      salary: crewMember.salary,
+      hireDate: crewMember.hireDate,
+      qualification: crewMember.qualification,
+      airline: crewMember.airlineId ? { airlineId: crewMember.airlineId } : null,
+    };
+    return api.post<CrewMember>('/crew-members', payload);
+  },
+  update: (id: number, crewMember: CrewMemberCreateRequest) => {
+    const payload = {
+      firstName: crewMember.firstName,
+      lastName: crewMember.lastName,
+      salary: crewMember.salary,
+      hireDate: crewMember.hireDate,
+      qualification: crewMember.qualification,
+      airline: crewMember.airlineId ? { airlineId: crewMember.airlineId } : null,
+    };
+    return api.patch<CrewMember>(`/crew-members/${id}`, payload);
+  },
   delete: (id: number) => api.delete(`/crew-members/${id}`),
   searchByAircraftClass: (className: string) => 
     api.get<CrewMember[]>(`/crew-members/search?className=${className}`),
@@ -102,8 +171,22 @@ export const crewMembersAPI = {
 export const crewAssignmentsAPI = {
   getAll: () => api.get<CrewAssignment[]>('/crew-assignments'),
   getById: (id: number) => api.get<CrewAssignment>(`/crew-assignments/${id}`),
-  create: (assignment: CrewAssignmentCreateRequest) => api.post<CrewAssignment>('/crew-assignments', assignment),
-  update: (id: number, assignment: CrewAssignmentCreateRequest) => api.patch<CrewAssignment>(`/crew-assignments/${id}`, assignment),
+  create: (assignment: CrewAssignmentCreateRequest) => {
+    const payload = {
+      role: assignment.role,
+      crewMember: { crewId: assignment.crewMemberId },
+      flight: { flightId: assignment.flightId },
+    };
+    return api.post<CrewAssignment>('/crew-assignments', payload);
+  },
+  update: (id: number, assignment: CrewAssignmentCreateRequest) => {
+    const payload = {
+      role: assignment.role,
+      crewMember: { crewId: assignment.crewMemberId },
+      flight: { flightId: assignment.flightId },
+    };
+    return api.patch<CrewAssignment>(`/crew-assignments/${id}`, payload);
+  },
   delete: (id: number) => api.delete(`/crew-assignments/${id}`),
   getByFlightId: (flightId: number) => api.get<CrewAssignment[]>(`/crew-assignments/flight/${flightId}`),
   getByCrewMemberId: (crewMemberId: number) => api.get<CrewAssignment[]>(`/crew-assignments/crew-member/${crewMemberId}`),
@@ -111,7 +194,16 @@ export const crewAssignmentsAPI = {
 
 export const ticketsAPI = {
   getAll: () => api.get<Ticket[]>('/tickets'),
-  create: (ticket: TicketCreateRequest) => api.post<Ticket>('/tickets', ticket),
+  create: (ticket: TicketCreateRequest) => {
+    const payload = {
+      passengerName: ticket.passengerName,
+      passengerPassport: ticket.passengerPassport,
+      seatNumber: ticket.seatNumber,
+      price: ticket.price,
+      flight: { flightId: ticket.flightId },
+    };
+    return api.post<Ticket>('/tickets', payload);
+  },
   searchByAirportAndPrice: (airportName: string, price: number) => 
     api.get<Ticket[]>(`/tickets/search?airportName=${airportName}&price=${price}`),
 };

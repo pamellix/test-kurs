@@ -1,12 +1,11 @@
 'use client';
-
 import { useState } from 'react';
-import { AirlinesManagement } from '@/components/AirlinesManagement';
-import { AircraftManagement } from '@/components/AircraftManagement';
+import AirlinesManagement from '@/components/AirlinesManagement';
+import AircraftManagement from '@/components/AircraftManagement';
 import { AircraftModelsManagement } from '@/components/AircraftModelsManagement';
 import { AirportsManagement } from '@/components/AirportsManagement';
 import { FlightsManagement } from '@/components/FlightsManagement';
-import { CrewMembersManagement } from '@/components/CrewMembersManagement';
+import CrewMembersManagement from '@/components/CrewMembersManagement';
 import { CrewAssignmentsManagement } from '@/components/CrewAssignmentsManagement';
 import { TicketsManagement } from '@/components/TicketsManagement';
 import { ComplexQueries } from '@/components/ComplexQueries';

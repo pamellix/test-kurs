@@ -1,11 +1,10 @@
 'use client';
-
 import { useState } from 'react';
-import { AirlinesManagement } from '@/components/AirlinesManagement';
-import { AircraftManagement } from '@/components/AircraftManagement';
+import AirlinesManagement from '@/components/AirlinesManagement';
+import AircraftManagement from '@/components/AircraftManagement';
 import { AirportsManagement } from '@/components/AirportsManagement';
 import { FlightsManagement } from '@/components/FlightsManagement';
-import { CrewMembersManagement } from '@/components/CrewMembersManagement';
+import CrewMembersManagement from '@/components/CrewMembersManagement';
 import { ComplexQueries } from '@/components/ComplexQueries';
 
 type TabType = 'airlines' | 'aircraft' | 'airports' | 'flights' | 'crew' | 'queries';
@@ -43,7 +42,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
@@ -85,14 +83,12 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           {renderContent()}
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t mt-12">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">

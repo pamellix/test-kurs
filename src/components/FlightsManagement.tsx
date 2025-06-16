@@ -33,15 +33,21 @@ export const FlightsManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedAircraft || !selectedDepartureAirport || !selectedArrivalAirport || 
+        !formData.departureTime || !formData.arrivalTime || !formData.flightHours || !formData.ticketPrice) {
+      alert('Пожалуйста, заполните все обязательные поля: самолет, аэропорты вылета и прилета, время вылета и прилета, длительность полета и цена билета');
+      return;
+    }
+
     try {
       const flightData: FlightCreateRequest = {
         departureTime: formData.departureTime,
         arrivalTime: formData.arrivalTime,
         flightHours: formData.flightHours,
         ticketPrice: formData.ticketPrice,
-        aircraftId: selectedAircraft ? Number(selectedAircraft) : undefined,
-        departureAirportId: selectedDepartureAirport ? Number(selectedDepartureAirport) : undefined,
-        arrivalAirportId: selectedArrivalAirport ? Number(selectedArrivalAirport) : undefined,
+        aircraftId: Number(selectedAircraft),
+        departureAirportId: Number(selectedDepartureAirport),
+        arrivalAirportId: Number(selectedArrivalAirport),
       };
 
       if (editingFlight && editingFlight.flightId) {
@@ -56,6 +62,7 @@ export const FlightsManagement = () => {
       resetForm();
     } catch (error) {
       console.error('Error saving flight:', error);
+      alert('Ошибка при сохранении рейса. Проверьте, что все поля заполнены корректно и выбранные самолет и аэропорты существуют.');
     }
   };
 
@@ -133,7 +140,6 @@ export const FlightsManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Рейсы</h2>
@@ -148,7 +154,6 @@ export const FlightsManagement = () => {
         </button>
       </div>
 
-      {/* Flights Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {Array.isArray(flights) && flights.map((flight) => (
           <div key={flight.flightId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
@@ -205,7 +210,6 @@ export const FlightsManagement = () => {
         ))}
       </div>
 
-      {/* Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-10 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white max-h-[90vh] overflow-y-auto">

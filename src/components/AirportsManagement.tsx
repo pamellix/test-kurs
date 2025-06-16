@@ -107,7 +107,6 @@ export const AirportsManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Аэропорты</h2>
@@ -122,7 +121,6 @@ export const AirportsManagement = () => {
         </button>
       </div>
 
-      {/* Airports Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.isArray(airports) && airports.map((airport) => (
           <div key={airport.airportId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
@@ -170,7 +168,6 @@ export const AirportsManagement = () => {
         ))}
       </div>
 
-      {/* Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">

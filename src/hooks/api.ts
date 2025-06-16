@@ -23,7 +23,6 @@ import {
   TicketCreateRequest
 } from '@/types';
 
-// Airlines hooks
 export const useAirlines = () => {
   return useQuery({
     queryKey: ['airlines'],
@@ -65,7 +64,6 @@ export const useDeleteAirline = () => {
   });
 };
 
-// Aircraft hooks
 export const useAircraft = () => {
   return useQuery({
     queryKey: ['aircraft'],
@@ -188,7 +186,6 @@ export const useDeleteAirport = () => {
   });
 };
 
-// Flights hooks
 export const useFlights = () => {
   return useQuery({
     queryKey: ['flights'],
@@ -230,7 +227,6 @@ export const useDeleteFlight = () => {
   });
 };
 
-// Crew Members hooks
 export const useCrewMembers = () => {
   return useQuery({
     queryKey: ['crewMembers'],
@@ -272,7 +268,6 @@ export const useDeleteCrewMember = () => {
   });
 };
 
-// Crew Assignments hooks
 export const useCrewAssignments = () => {
   return useQuery({
     queryKey: ['crewAssignments'],
@@ -334,7 +329,6 @@ export const useCreateTicket = () => {
   });
 };
 
-// Complex queries hooks
 interface FlightsWithAircraftInfoParams {
   startDate?: string;
   endDate?: string;
@@ -350,35 +344,35 @@ interface AirportLoadDetailsParams {
 
 export const useFlightsWithAircraftInfo = (params: FlightsWithAircraftInfoParams = {}) => {
   return useQuery({
-    queryKey: ['complexQuery', 'flightsWithAircraftInfo', params],
-    queryFn: () => complexQueries.getFlightsWithAircraftInfo(params),
+    queryKey: ['complexQuery', 'flights', params],
+    queryFn: () => complexQueries.flights(params),
   });
 };
 
 export const useCrewWithFlightInfo = (params: CrewWithFlightInfoParams = {}) => {
   return useQuery({
-    queryKey: ['complexQuery', 'crewWithFlightInfo', params],
-    queryFn: () => complexQueries.getCrewWithFlightInfo(params),
+    queryKey: ['complexQuery', 'crew', params],
+    queryFn: () => complexQueries.crew(params),
   });
 };
 
 export const useAirlineAircraftStats = () => {
   return useQuery({
-    queryKey: ['complexQuery', 'airlineAircraftStats'],
-    queryFn: () => complexQueries.getAirlineAircraftStats(),
+    queryKey: ['complexQuery', 'airlines'],
+    queryFn: () => complexQueries.airlines(),
   });
 };
 
 export const useAirportLoadDetails = (params: AirportLoadDetailsParams = {}) => {
   return useQuery({
-    queryKey: ['complexQuery', 'airportLoadDetails', params],
-    queryFn: () => complexQueries.getAirportLoadDetails(params),
+    queryKey: ['complexQuery', 'airports', params],
+    queryFn: () => complexQueries.airports(params),
   });
 };
 
 export const useTicketDetailsWithPassengers = () => {
   return useQuery({
-    queryKey: ['complexQuery', 'ticketDetailsWithPassengers'],
-    queryFn: () => complexQueries.getTicketDetailsWithPassengers(),
+    queryKey: ['complexQuery', 'tickets'],
+    queryFn: () => complexQueries.tickets(),
   });
 };

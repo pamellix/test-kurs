@@ -296,13 +296,11 @@ export const ComplexQueries = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Сложные SQL Запросы</h2>
         <p className="text-gray-600">Выполнение комплексных запросов с INNER JOIN к базе данных</p>
       </div>
 
-      {/* Query Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {queries.map((query) => (
           <button
@@ -326,12 +324,10 @@ export const ComplexQueries = () => {
         ))}
       </div>
 
-      {/* Query Results */}
       <div className="mt-8">
         {renderQueryResults()}
       </div>
 
-      {/* SQL Query Info */}
       {activeQuery && (
         <div className="bg-gray-50 rounded-lg p-6">
           <h4 className="text-md font-semibold text-gray-900 mb-3">ℹ️ Информация о запросе</h4>
@@ -343,7 +339,6 @@ export const ComplexQueries = () => {
         </div>
       )}
 
-      {/* Modal */}
       {activeQuery && (
         <QueryModal
           isOpen={isModalOpen}
