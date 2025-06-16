@@ -335,17 +335,30 @@ export const useCreateTicket = () => {
 };
 
 // Complex queries hooks
-export const useFlightsWithAircraftInfo = () => {
+interface FlightsWithAircraftInfoParams {
+  startDate?: string;
+  endDate?: string;
+}
+
+interface CrewWithFlightInfoParams {
+  airlineId?: number;
+}
+
+interface AirportLoadDetailsParams {
+  airportId?: number;
+}
+
+export const useFlightsWithAircraftInfo = (params: FlightsWithAircraftInfoParams = {}) => {
   return useQuery({
-    queryKey: ['complexQuery', 'flightsWithAircraftInfo'],
-    queryFn: () => complexQueries.getFlightsWithAircraftInfo(),
+    queryKey: ['complexQuery', 'flightsWithAircraftInfo', params],
+    queryFn: () => complexQueries.getFlightsWithAircraftInfo(params),
   });
 };
 
-export const useCrewWithFlightInfo = () => {
+export const useCrewWithFlightInfo = (params: CrewWithFlightInfoParams = {}) => {
   return useQuery({
-    queryKey: ['complexQuery', 'crewWithFlightInfo'],
-    queryFn: () => complexQueries.getCrewWithFlightInfo(),
+    queryKey: ['complexQuery', 'crewWithFlightInfo', params],
+    queryFn: () => complexQueries.getCrewWithFlightInfo(params),
   });
 };
 
@@ -356,10 +369,10 @@ export const useAirlineAircraftStats = () => {
   });
 };
 
-export const useAirportLoadDetails = () => {
+export const useAirportLoadDetails = (params: AirportLoadDetailsParams = {}) => {
   return useQuery({
-    queryKey: ['complexQuery', 'airportLoadDetails'],
-    queryFn: () => complexQueries.getAirportLoadDetails(),
+    queryKey: ['complexQuery', 'airportLoadDetails', params],
+    queryFn: () => complexQueries.getAirportLoadDetails(params),
   });
 };
 

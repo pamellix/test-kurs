@@ -1,13 +1,20 @@
 import { ComplexQueryResult } from '@/types';
 
-export const executeQuery = async (queryType: string): Promise<ComplexQueryResult[]> => {
+interface QueryParams {
+  startDate?: string;
+  endDate?: string;
+  airlineId?: number;
+  airportId?: number;
+}
+
+export const executeQuery = async (queryType: string, params: QueryParams = {}): Promise<ComplexQueryResult[]> => {
   try {
     const response = await fetch('/api/sql-queries', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ queryType }),
+      body: JSON.stringify({ queryType, ...params }),
     });
     
     if (!response.ok) {
@@ -23,13 +30,18 @@ export const executeQuery = async (queryType: string): Promise<ComplexQueryResul
 };
 
 export const complexQueries = {
-  getFlightsWithAircraftInfo: () => executeQuery('flights'),
+  getFlightsWithAircraftInfo: (params: { startDate?: string; endDate?: string } = {}) => 
+    executeQuery('flights', params),
 
-  getCrewWithFlightInfo: () => executeQuery('crew'),
+  getCrewWithFlightInfo: (params: { airlineId?: number } = {}) => 
+    executeQuery('crew', params),
 
-  getAirlineAircraftStats: () => executeQuery('airlines'),
+  getAirlineAircraftStats: () => 
+    executeQuery('airlines'),
 
-  getAirportLoadDetails: () => executeQuery('airports'),
+  getAirportLoadDetails: (params: { airportId?: number } = {}) => 
+    executeQuery('airports', params),
 
-  getTicketDetailsWithPassengers: () => executeQuery('tickets'),
+  getTicketDetailsWithPassengers: () => 
+    executeQuery('tickets'),
 };

@@ -56,7 +56,7 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-500">
-                API: <span className="text-green-600 font-mono">localhost:8080</span>
+                API: <span className="text-green-600 font-mono">195.58.37.85:8080</span>
               </div>
             </div>
           </div>

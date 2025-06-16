@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/api/proxy/:path*',
-        destination: 'http://localhost:8080/api/:path*',
+        destination: 'http://195.58.37.85:8080/api/:path*',
       },
     ]
   },

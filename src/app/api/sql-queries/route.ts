@@ -12,7 +12,7 @@ const pool = new Pool({
 
 export async function POST(request: NextRequest) {
   try {
-    const { queryType } = await request.json();
+    const { queryType, startDate, endDate, airlineId, airportId } = await request.json();
 
     let query = '';
     
@@ -27,18 +27,25 @@ export async function POST(request: NextRequest) {
             a.registration_number,
             am.name as aircraft_model,
             am.manufacturer,
+            am.passenger_capacity,
             al.name as airline_name,
             al.country as airline_country,
             dep.name as departure_airport,
             dep.city as departure_city,
             arr.name as arrival_airport,
-            arr.city as arrival_city
+            arr.city as arrival_city,
+            COUNT(t.ticket_id) as tickets_sold,
+            am.passenger_capacity - COUNT(t.ticket_id) as available_seats
           FROM flight f
           INNER JOIN aircraft a ON f.aircraft_id = a.aircraft_id
           INNER JOIN aircraft_model am ON a.model_id = am.model_id
           INNER JOIN airlines al ON a.airline_id = al.airline_id
           INNER JOIN airport dep ON f.departure_airport = dep.airport_id
           INNER JOIN airport arr ON f.arrival_airport = arr.airport_id
+          LEFT JOIN ticket t ON f.flight_id = t.flight_id
+          ${startDate && endDate ? `WHERE f.departure_time BETWEEN '${startDate}' AND '${endDate}'` : ''}
+          GROUP BY f.flight_id, a.registration_number, am.name, am.manufacturer, am.passenger_capacity, 
+                   al.name, al.country, dep.name, dep.city, arr.name, arr.city
           ORDER BY f.departure_time DESC
         `;
         break;
@@ -64,6 +71,7 @@ export async function POST(request: NextRequest) {
           INNER JOIN airlines al ON cm.airline_id = al.airline_id
           INNER JOIN airport dep ON f.departure_airport = dep.airport_id
           INNER JOIN airport arr ON f.arrival_airport = arr.airport_id
+          ${airlineId ? `WHERE al.airline_id = ${airlineId}` : ''}
           ORDER BY f.departure_time DESC
         `;
         break;
@@ -71,16 +79,19 @@ export async function POST(request: NextRequest) {
       case 'airlines':
         query = `
           SELECT 
+            al.airline_id,
             al.name as airline_name,
             al.country,
             COUNT(DISTINCT a.aircraft_id) as total_aircraft,
             COUNT(DISTINCT f.flight_id) as total_flights,
             AVG(f.ticket_price) as avg_ticket_price,
-            SUM(am.passenger_capacity) as total_passenger_capacity
+            SUM(am.passenger_capacity) as total_passenger_capacity,
+            COUNT(DISTINCT cm.crew_id) as total_crew_members
           FROM airlines al
           INNER JOIN aircraft a ON al.airline_id = a.airline_id
           INNER JOIN aircraft_model am ON a.model_id = am.model_id
           LEFT JOIN flight f ON a.aircraft_id = f.aircraft_id
+          LEFT JOIN crew_member cm ON al.airline_id = cm.airline_id
           GROUP BY al.airline_id, al.name, al.country
           ORDER BY total_flights DESC
         `;
@@ -89,6 +100,7 @@ export async function POST(request: NextRequest) {
       case 'airports':
         query = `
           SELECT 
+            ap.airport_id,
             ap.name as airport_name,
             ap.city,
             ap.country,
@@ -96,11 +108,14 @@ export async function POST(request: NextRequest) {
             COUNT(DISTINCT arr_flights.flight_id) as arrivals_count,
             COUNT(DISTINCT dep_flights.flight_id) + COUNT(DISTINCT arr_flights.flight_id) as total_flights,
             AVG(dep_flights.ticket_price) as avg_departure_price,
-            COUNT(DISTINCT a.airline_id) as airlines_served
+            COUNT(DISTINCT a.airline_id) as airlines_served,
+            COUNT(DISTINCT t.ticket_id) as total_passengers
           FROM airport ap
           LEFT JOIN flight dep_flights ON ap.airport_id = dep_flights.departure_airport
           LEFT JOIN flight arr_flights ON ap.airport_id = arr_flights.arrival_airport
           LEFT JOIN aircraft a ON (dep_flights.aircraft_id = a.aircraft_id OR arr_flights.aircraft_id = a.aircraft_id)
+          LEFT JOIN ticket t ON (dep_flights.flight_id = t.flight_id OR arr_flights.flight_id = t.flight_id)
+          ${airportId ? `WHERE ap.airport_id = ${airportId}` : ''}
           GROUP BY ap.airport_id, ap.name, ap.city, ap.country
           ORDER BY total_flights DESC
         `;

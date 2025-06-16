@@ -8,17 +8,53 @@ import {
   useAirportLoadDetails, 
   useTicketDetailsWithPassengers 
 } from '@/hooks/api';
+import { QueryModal } from './QueryModal';
 
-type QueryType = 'flights' | 'crew' | 'airlines' | 'airports' | 'tickets';
+interface ComplexQueryResult {
+  [key: string]: unknown;
+  airline_id?: number;
+  airline_name?: string;
+  airport_id?: number;
+  airport_name?: string;
+  city?: string;
+}
+
+export type QueryType = 'flights' | 'crew' | 'airlines' | 'airports' | 'tickets';
+
+interface FilterState {
+  startDate: string;
+  endDate: string;
+  airlineId: string;
+  airportId: string;
+}
 
 export const ComplexQueries = () => {
   const [activeQuery, setActiveQuery] = useState<QueryType | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    startDate: '',
+    endDate: '',
+    airlineId: '',
+    airportId: '',
+  });
 
-  const flightsQuery = useFlightsWithAircraftInfo();
-  const crewQuery = useCrewWithFlightInfo();
+  const flightsQuery = useFlightsWithAircraftInfo({
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  });
+  const crewQuery = useCrewWithFlightInfo({
+    airlineId: filters.airlineId ? Number(filters.airlineId) : undefined,
+  });
   const airlinesQuery = useAirlineAircraftStats();
-  const airportsQuery = useAirportLoadDetails();
+  const airportsQuery = useAirportLoadDetails({
+    airportId: filters.airportId ? Number(filters.airportId) : undefined,
+  });
   const ticketsQuery = useTicketDetailsWithPassengers();
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
 
   const queries = [
     {
@@ -28,6 +64,34 @@ export const ComplexQueries = () => {
       icon: '🛫',
       hook: flightsQuery,
       color: 'bg-blue-500',
+      filters: (
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Дата начала
+            </label>
+            <input
+              type="date"
+              name="startDate"
+              value={filters.startDate}
+              onChange={handleFilterChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Дата окончания
+            </label>
+            <input
+              type="date"
+              name="endDate"
+              value={filters.endDate}
+              onChange={handleFilterChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+      ),
     },
     {
       id: 'crew' as QueryType,
@@ -36,6 +100,29 @@ export const ComplexQueries = () => {
       icon: '👨‍✈️',
       hook: crewQuery,
       color: 'bg-green-500',
+      filters: (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Авиакомпания
+          </label>
+          <select
+            name="airlineId"
+            value={filters.airlineId}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Все авиакомпании</option>
+            {airlinesQuery.data?.map((airline: ComplexQueryResult) => (
+              <option 
+                key={airline.airline_id} 
+                value={airline.airline_id}
+              >
+                {airline.airline_name}
+              </option>
+            ))}
+          </select>
+        </div>
+      ),
     },
     {
       id: 'airlines' as QueryType,
@@ -52,11 +139,34 @@ export const ComplexQueries = () => {
       icon: '🏢',
       hook: airportsQuery,
       color: 'bg-orange-500',
+      filters: (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Аэропорт
+          </label>
+          <select
+            name="airportId"
+            value={filters.airportId}
+            onChange={handleFilterChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Все аэропорты</option>
+            {airportsQuery.data?.map((airport: ComplexQueryResult) => (
+              <option 
+                key={airport.airport_id} 
+                value={airport.airport_id}
+              >
+                {airport.airport_name} ({airport.city})
+              </option>
+            ))}
+          </select>
+        </div>
+      ),
     },
     {
       id: 'tickets' as QueryType,
-      title: 'Детализация билетов',
-      description: 'Подробная информация о билетах с данными пассажиров и рейсов',
+      title: 'Билеты и пассажиры',
+      description: 'Информация о билетах и пассажирах с деталями рейсов',
       icon: '🎫',
       hook: ticketsQuery,
       color: 'bg-red-500',
@@ -65,7 +175,19 @@ export const ComplexQueries = () => {
 
   const executeQuery = (queryType: QueryType) => {
     setActiveQuery(queryType);
-    const query = queries.find(q => q.id === queryType);
+    if (queryType === 'flights' || queryType === 'crew' || queryType === 'airports') {
+      setIsModalOpen(true);
+    } else {
+      const query = queries.find(q => q.id === queryType);
+      if (query) {
+        query.hook.refetch();
+      }
+    }
+  };
+
+  const handleModalSubmit = (params: Record<string, string>) => {
+    setFilters(prev => ({ ...prev, ...params }));
+    const query = queries.find(q => q.id === activeQuery);
     if (query) {
       query.hook.refetch();
     }
@@ -219,6 +341,16 @@ export const ComplexQueries = () => {
             <p><strong>Описание:</strong> {queries.find(q => q.id === activeQuery)?.description}</p>
           </div>
         </div>
+      )}
+
+      {/* Modal */}
+      {activeQuery && (
+        <QueryModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleModalSubmit}
+          queryType={activeQuery}
+        />
       )}
     </div>
   );
